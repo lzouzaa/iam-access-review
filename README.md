@@ -1,22 +1,23 @@
-# IAM Access Review Tool
+# IAM Access Review – Ferramenta de Revisão de Acessos
 
-Internal tool for comparing corporate directory users with application access lists to identify improper, obsolete, or unmatched access.
+Ferramenta interna para comparar usuários do diretório corporativo com listas de acesso em aplicações e identificar acessos indevidos, obsoletos ou sem correspondência.
 
-## Features
+## Funcionalidades
 
-- **Upload**: CSV and Excel (corporate users + application users)
-- **Standardization**: Automatic column mapping (name, email, login)
-- **Comparison**: By name, email, and login
-- **Classification**:
+- **Upload**: CSV e Excel (usuários corporativos + usuários por ferramenta/aplicação)
+- **Padronização**: Mapeamento automático de colunas (nome, e-mail, login)
+- **Comparação**: Por nome, e-mail e login
+- **Classificação**:
   - OK
   - Remover com prioridade
   - Possível remoção
   - Revisão manual
   - Acesso obsoleto
-- **Dashboard**: Metrics and filters by application
-- **Export**: CSV, Excel, and executive summary (text)
+- **Dashboard**: Métricas e filtros por aplicação
+- **Exportação**: CSV, Excel e resumo executivo (texto)
+- **Idiomas**: Interface em Português (Brasil) e English (US)
 
-## Setup
+## Configuração
 
 ```bash
 python -m venv .venv
@@ -24,43 +25,45 @@ source .venv/bin/activate   # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-## Run
+## Executar
 
 ```bash
 streamlit run app.py
 ```
 
-Or with Make: `make run` (after `make install`).
+Ou com Make: `make run` (após `make install`).
 
-Open the URL shown in the terminal (default: http://localhost:8501).
+Abra o endereço exibido no terminal (padrão: http://localhost:8501).
 
-## Project structure
+## Estrutura do projeto
 
 ```
 iam-access-review/
-├── app.py           # Streamlit UI
-├── comparator.py    # Comparison and classification logic
-├── utils.py         # File load and column normalization
-├── sample_data/     # Example files for testing
-├── outputs/         # Exported reports (gitignored)
+├── app.py           # Interface Streamlit
+├── comparator.py    # Lógica de comparação e classificação
+├── utils.py         # Leitura de arquivos e normalização de colunas
+├── i18n.py          # Textos em PT-BR e EN-US
+├── sample_data/     # Arquivos de exemplo para teste
+├── outputs/         # Relatórios exportados (ignorado pelo git)
 ├── requirements.txt
+├── Makefile
 └── README.md
 ```
 
-## Sample data
+## Dados de exemplo
 
-Place or use files in `sample_data/`:
+Use ou coloque arquivos em `sample_data/`:
 
-1. **Corporate users**: Active users from AD/corporate directory (columns: name, email, login or similar).
-2. **Application users**: Active users per application (columns: name, email, login, application or similar).
+1. **Usuários corporativos**: Um arquivo com usuários ativos do AD/diretório corporativo (colunas: nome, e-mail, login ou equivalentes).
+2. **Ferramentas/aplicações**: Um ou mais arquivos — cada arquivo = uma ferramenta. O nome do arquivo identifica a fonte (ex.: `Sistema_RH.csv`, `Portal_Financeiro.xlsx`).
 
-Column names are normalized automatically (e.g. "e-mail", "email", "usuário" → email).
+Os nomes de coluna são normalizados automaticamente (ex.: "e-mail", "email", "usuário" → email).
 
-## Push to your Git (GitHub, GitLab, etc.)
+## Subir para o seu Git (GitHub, GitLab, etc.)
 
-1. **Create a new repository** on GitHub/GitLab (empty, no README).
+1. **Crie um repositório novo** no GitHub/GitLab (vazio, sem README).
 
-2. **Initialize and push from your machine:**
+2. **Inicialize e envie da sua máquina:**
 
 ```bash
 cd iam-access-review
@@ -72,9 +75,9 @@ git remote add origin https://github.com/SEU_USUARIO/iam-access-review.git
 git push -u origin main
 ```
 
-Replace `SEU_USUARIO/iam-access-review` with your actual **username/repo-name**.  
-If you use SSH: `git remote add origin git@github.com:SEU_USUARIO/iam-access-review.git`
+Substitua `SEU_USUARIO/iam-access-review` pelo seu **usuário/nome-do-repo**.  
+Se usar SSH: `git remote add origin git@github.com:SEU_USUARIO/iam-access-review.git`
 
-## License
+## Licença
 
-Internal use only.
+Uso interno.
