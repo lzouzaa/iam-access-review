@@ -1,0 +1,13 @@
+MODELOS DE PLANILHA - IAM Access Review
+
+1) modelo_usuarios_corporativo.csv
+   Use para a BASE PRINCIPAL (usuários ativos do diretório corporativo / AD).
+   Colunas obrigatórias: nome, email, login
+   Aceita também: "Nome", "E-mail", "Login", "usuário", etc. – o app normaliza automaticamente.
+
+2) modelo_ferramenta_aplicacao.csv
+   Use para cada FERRAMENTA/APLICAÇÃO (um arquivo por sistema).
+   Colunas: nome, email, login
+   O nome do arquivo ao fazer upload será usado como identificador da ferramenta (ex.: Sistema_RH.csv).
+
+Formato: CSV ou Excel (.xlsx). Use codificação UTF-8 ao salvar (no Excel: "Salvar como" → CSV UTF-8, ou exportar como Excel .xlsx). Assim a acentuação (ã, é, ç, etc.) é preservada.
