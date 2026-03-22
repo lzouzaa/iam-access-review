@@ -2,7 +2,7 @@
 Generate executive PowerPoint presentation from review results.
 """
 from io import BytesIO
-from typing import List
+from typing import Dict, List
 
 from pptx import Presentation
 from pptx.util import Inches, Pt
@@ -22,6 +22,7 @@ def build_executive_pptx(
     summary_lines: List[str],
     lang: str,
     date_str: str,
+    remove_by_application: Dict[str, int] | None = None,
 ) -> bytes:
     """
     Build a .pptx with title slide, metrics slide, and summary slide.
@@ -84,6 +85,54 @@ def build_executive_pptx(
             p.text = line.strip()
             p.font.size = Pt(12)
             p.space_after = Pt(4)
+
+    # Slide 4: Tools/systems with users recommended for removal
+    slide = prs.slides.add_slide(layout)
+    rem_title = (
+        "Ferramentas com usuários recomendados para remoção"
+        if lang == "pt-BR"
+        else "Tools with users recommended for removal"
+    )
+    title_box = slide.shapes.add_textbox(Inches(0.5), Inches(0.4), Inches(9), Inches(0.8))
+    tf = title_box.text_frame
+    p = tf.paragraphs[0]
+    p.text = rem_title
+    p.font.size = Pt(24)
+    p.font.bold = True
+
+    body = slide.shapes.add_textbox(Inches(0.5), Inches(1.3), Inches(9), Inches(5.5))
+    tf = body.text_frame
+    tf.word_wrap = True
+
+    items = []
+    if remove_by_application:
+        items = sorted(remove_by_application.items(), key=lambda kv: (-kv[1], kv[0]))
+
+    if not items:
+        text = (
+            "Nenhum usuário recomendado para remoção prioritária."
+            if lang == "pt-BR"
+            else "No users recommended for priority removal."
+        )
+        p = tf.paragraphs[0]
+        p.text = text
+        p.font.size = Pt(14)
+    else:
+        intro = (
+            "Quantidade de usuários classificados como 'Remover com prioridade' por ferramenta:"
+            if lang == "pt-BR"
+            else "Number of users classified as 'Remove with priority' per tool:"
+        )
+        p = tf.paragraphs[0]
+        p.text = intro
+        p.font.size = Pt(13)
+        p.space_after = Pt(8)
+
+        for app_name, count in items:
+            p = tf.add_paragraph()
+            p.text = f"  • {app_name}: {int(count)}"
+            p.font.size = Pt(13)
+            p.space_after = Pt(5)
 
     buf = BytesIO()
     prs.save(buf)
