@@ -74,6 +74,11 @@ TEXTS = {
         "download_remove_csv": "Download lista a remover (CSV)",
         "download_remove_xlsx": "Download lista a remover (Excel)",
         "empty_remove": "Nenhum usuário classificado para remoção prioritária.",
+        "header_out_of_standard": "Dashboard: usuários fora do padrão por aplicação",
+        "header_out_of_standard_desc": "Considera como fora do padrão qualquer classificação diferente de **OK**.",
+        "col_application": "Aplicação",
+        "col_out_of_standard": "Fora do padrão",
+        "empty_out_of_standard": "Sem dados de aplicação para montar o dashboard de fora do padrão.",
     },
     "en-US": {
         "page_title": "IAM Access Review",
@@ -121,6 +126,11 @@ TEXTS = {
         "download_remove_csv": "Download list to remove (CSV)",
         "download_remove_xlsx": "Download list to remove (Excel)",
         "empty_remove": "No users classified for priority removal.",
+        "header_out_of_standard": "Dashboard: out-of-standard users by application",
+        "header_out_of_standard_desc": "Considers out-of-standard any classification different from **OK**.",
+        "col_application": "Application",
+        "col_out_of_standard": "Out of standard",
+        "empty_out_of_standard": "No application data available to build out-of-standard dashboard.",
     },
 }
 

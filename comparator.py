@@ -59,12 +59,11 @@ def _find_corporate_match(
     idx_email = lookup["email"].get(email)
     idx_name = lookup["name"].get(name)
 
+    # Reference rule: if ANY identifier matches corporate base, do not recommend
+    # priority removal. Corporate base is the source of truth.
     if idx_login is not None:
         return "login", CLASS_OK
     if idx_email is not None:
-        corp_row = corporate_df.loc[idx_email]
-        if name and _normalize_value(corp_row.get("name", "")) != name:
-            return "email", CLASS_REVISAO_MANUAL
         return "email", CLASS_OK
     if idx_name is not None:
         return "name", CLASS_POSSIVEL_REMOCAO
@@ -104,8 +103,6 @@ def compare(
     - in_corporate (True/False)
     """
     lookup = _build_lookup(corporate_df)
-    corporate_indices = set(corporate_df.index)
-
     rows: List[dict] = []
     for idx, row in app_df.iterrows():
         match_type, classification = _find_corporate_match(

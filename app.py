@@ -43,6 +43,58 @@ with col_lang:
 
 lang = st.session_state.lang
 
+
+def _inject_uploader_locale(lang_code: str) -> None:
+    """Best-effort UI translation for Streamlit's internal file uploader labels."""
+    if lang_code == "pt-BR":
+        drag_text = "Arraste e solte arquivo(s) aqui"
+        limit_text = "Limite 200MB por arquivo • CSV, XLSX"
+        browse_text = "Selecionar arquivos"
+    else:
+        drag_text = "Drag and drop file here"
+        limit_text = "Limit 200MB per file • CSV, XLSX"
+        browse_text = "Browse files"
+
+    st.markdown(
+        f"""
+<style>
+[data-testid="stFileUploaderDropzoneInstructions"] > div {{
+  visibility: hidden;
+  position: relative;
+}}
+[data-testid="stFileUploaderDropzoneInstructions"] > div::after {{
+  content: "{drag_text}";
+  visibility: visible;
+  position: absolute;
+  left: 0;
+  top: 0;
+}}
+[data-testid="stFileUploaderDropzoneInstructions"] > span {{
+  visibility: hidden;
+  position: relative;
+}}
+[data-testid="stFileUploaderDropzoneInstructions"] > span::after {{
+  content: "{limit_text}";
+  visibility: visible;
+  position: absolute;
+  left: 0;
+  top: 0;
+}}
+[data-testid="stFileUploaderDropzone"] button {{
+  font-size: 0;
+}}
+[data-testid="stFileUploaderDropzone"] button::after {{
+  content: "{browse_text}";
+  font-size: 0.95rem;
+}}
+</style>
+""",
+        unsafe_allow_html=True,
+    )
+
+
+_inject_uploader_locale(lang)
+
 st.title(f"🔐 {t('page_title', lang)}")
 st.caption(t("page_caption", lang))
 
@@ -137,6 +189,32 @@ if review_df is not None and not review_df.empty:
     for i, (cl, count) in enumerate(stats.items()):
         with cols[i]:
             st.metric(label=classification_label(cl, lang), value=int(count))
+
+    # Out-of-standard by application (classification != OK)
+    st.subheader(t("header_out_of_standard", lang))
+    st.caption(t("header_out_of_standard_desc", lang))
+    if "application" in review_df.columns and review_df["application"].notna().any():
+        out_standard_df = (
+            review_df[review_df["classification"] != CLASS_OK]
+            .groupby("application")
+            .size()
+            .reset_index(name="out_of_standard")
+            .sort_values("out_of_standard", ascending=False)
+        )
+        if out_standard_df.empty:
+            st.info(t("empty_out_of_standard", lang))
+        else:
+            display_out = out_standard_df.rename(
+                columns={
+                    "application": t("col_application", lang),
+                    "out_of_standard": t("col_out_of_standard", lang),
+                }
+            )
+            st.dataframe(display_out, use_container_width=True, height=min(350, 80 + len(display_out) * 35))
+            chart_df = out_standard_df.set_index("application")
+            st.bar_chart(chart_df["out_of_standard"])
+    else:
+        st.info(t("empty_out_of_standard", lang))
 
     # Filter by application
     app_col = "application"
@@ -234,7 +312,22 @@ if review_df is not None and not review_df.empty:
             mime="text/plain; charset=utf-8",
         )
 
-    ppt_bytes = build_executive_pptx(stats, summary_lines, lang, date_str)
+    remove_by_application = (
+        review_df[review_df["classification"] == CLASS_REMOVER_PRIORIDADE]
+        .groupby("application")
+        .size()
+        .astype(int)
+        .to_dict()
+        if "application" in review_df.columns
+        else {}
+    )
+    ppt_bytes = build_executive_pptx(
+        stats,
+        summary_lines,
+        lang,
+        date_str,
+        remove_by_application=remove_by_application,
+    )
     with col4:
         st.download_button(
             t("download_ppt", lang),
